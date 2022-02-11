@@ -23,6 +23,9 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import javax.security.auth.x500.X500Principal;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
@@ -83,7 +86,10 @@ public class DynamicKeyStore {
 		final int daysTillExpiry = 10 * 365;
 
 	    final Calendar expiry = Calendar.getInstance();
+	    final Calendar start = Calendar.getInstance();
 	    expiry.add(Calendar.DAY_OF_YEAR, daysTillExpiry);
+// Set the start date of the certificate to a week ago to make sure it is considered valid
+	    start.add(Calendar.DAY_OF_YEAR, -7);
 		
 		
 		
@@ -93,11 +99,12 @@ public class DynamicKeyStore {
 
 		certGen.setSerialNumber(java.math.BigInteger.valueOf(System.currentTimeMillis()));
 		certGen.setIssuerDN(caCert.getSubjectX500Principal());
-		certGen.setNotBefore(new Date());
+		certGen.setNotBefore(start.getTime());
 		certGen.setNotAfter(expiry.getTime());
 		certGen.setSubjectDN(subjectName);
 		certGen.setPublicKey(pubKey);
 		certGen.setSignatureAlgorithm("SHA256withRSA");
+		certGen.addExtension(X509Extensions.SubjectAlternativeName, true, new DERSequence(new GeneralName(GeneralName.dNSName,cn)));
 
 		//
 		// extensions
