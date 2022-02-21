@@ -83,7 +83,7 @@ public class DynamicKeyStore {
 										X509Certificate caCert,
 										String cn, String o, String ou, String l, String st, String c
 										) throws InvalidKeyException, IllegalStateException, NoSuchProviderException, NoSuchAlgorithmException, SignatureException, CertificateException{
-		final int daysTillExpiry = 10 * 365;
+		final int daysTillExpiry = 365;
 
 	    final Calendar expiry = Calendar.getInstance();
 	    final Calendar start = Calendar.getInstance();
