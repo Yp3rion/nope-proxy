@@ -40,10 +40,13 @@ public class DynamicKeyStore {
 									String cn, String o, String ou, String l, String st, String c
 									) throws InvalidKeyException, IllegalStateException, NoSuchProviderException, NoSuchAlgorithmException, SignatureException, CertificateException, IOException{
 		
-		final int daysTillExpiry = 10 * 365;
+		final int daysTillExpiry = 365;
 
 	    final Calendar expiry = Calendar.getInstance();
+	    final Calendar start = Calendar.getInstance();
 	    expiry.add(Calendar.DAY_OF_YEAR, daysTillExpiry);
+// Set the start date of the certificate to a week ago to make sure it is considered valid
+	    start.add(Calendar.DAY_OF_YEAR, -7);
 
 	   /*X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name("CN="+cn+", OU="+ou+", O="+o+", L="+l),BigInteger.valueOf(new SecureRandom().nextLong()), new Date(), expiry.getTime(), new X500Name("CN=PortSwigger CA"), SubjectPublicKeyInfo.getInstance(pubKey.getEncoded()));
 	    byte[] certBytes = certBuilder.build(new JCESigner(intPrivKey, "SHA256withRSA")).getEncoded();
@@ -55,11 +58,12 @@ public class DynamicKeyStore {
 
 		certGen.setSerialNumber(java.math.BigInteger.valueOf(System.currentTimeMillis()));
 		certGen.setIssuerDN(cacertPrin);
-		certGen.setNotBefore(new Date());
+		certGen.setNotBefore(start.getTime());
 		certGen.setNotAfter(expiry.getTime());
 		certGen.setSubjectDN(subjectName);
 		certGen.setPublicKey(pubKey);
 		certGen.setSignatureAlgorithm("SHA256withRSA");
+		certGen.addExtension(X509Extensions.SubjectAlternativeName, true, new DERSequence(new GeneralName(GeneralName.dNSName,cn)));
 		
 
 		/*certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false,
