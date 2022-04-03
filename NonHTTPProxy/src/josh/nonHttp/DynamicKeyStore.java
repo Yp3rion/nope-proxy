@@ -25,6 +25,8 @@ import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
@@ -64,6 +66,7 @@ public class DynamicKeyStore {
 		certGen.setPublicKey(pubKey);
 		certGen.setSignatureAlgorithm("SHA256withRSA");
 		certGen.addExtension(X509Extensions.SubjectAlternativeName, true, new DERSequence(new GeneralName(GeneralName.dNSName,cn)));
+		certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth));
 		
 
 		/*certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false,
@@ -109,6 +112,7 @@ public class DynamicKeyStore {
 		certGen.setPublicKey(pubKey);
 		certGen.setSignatureAlgorithm("SHA256withRSA");
 		certGen.addExtension(X509Extensions.SubjectAlternativeName, true, new DERSequence(new GeneralName(GeneralName.dNSName,cn)));
+		certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth));
 
 		//
 		// extensions
@@ -182,11 +186,11 @@ public class DynamicKeyStore {
 	        //char[] pw = password.toCharArray();
 	        char[] pw = "changeit".toCharArray();
 	        KeyPairGenerator r = KeyPairGenerator.getInstance("RSA");
-			r.initialize(1024);
+			r.initialize(2048);
 			KeyPair intkeyPair = r.generateKeyPair();
 			
 			KeyPairGenerator r1 = KeyPairGenerator.getInstance("RSA");
-			r1.initialize(1024);
+			r1.initialize(2048);
 			KeyPair keyPair = r1.generateKeyPair();
 		
 	        
